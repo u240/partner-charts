@@ -12277,6 +12277,48 @@ entries:
       category: Database
       images: |
         - name: cassandra
+          image: docker.io/bitnami/cassandra:4.1.4-debian-12-r5
+        - name: cassandra-exporter
+          image: docker.io/bitnami/cassandra-exporter:2.3.8-debian-12-r18
+        - name: os-shell
+          image: docker.io/bitnami/os-shell:12-debian-12-r17
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.1.4
+    created: "2024-03-27T00:59:28.867853454Z"
+    dependencies:
+    - name: common
+      repository: file://./charts/common
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: Apache Cassandra is an open source distributed database management
+      system designed to handle large amounts of data across many servers, providing
+      high availability with no single point of failure.
+    digest: a8824bf84e618e7dbef0e4be32dbdb787e80291a5e603d2f179f65c5a0289c7e
+    home: https://bitnami.com
+    icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/cassandra-4.svg
+    keywords:
+    - cassandra
+    - database
+    - nosql
+    maintainers:
+    - name: VMware, Inc.
+      url: https://github.com/bitnami/charts
+    name: cassandra
+    sources:
+    - https://github.com/bitnami/charts/tree/main/bitnami/cassandra
+    urls:
+    - assets/bitnami/cassandra-11.0.1.tgz
+    version: 11.0.1
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: Apache Cassandra
+      catalog.cattle.io/kube-version: '>=1.19-0'
+      catalog.cattle.io/release-name: cassandra
+      category: Database
+      images: |
+        - name: cassandra
           image: docker.io/bitnami/cassandra:4.1.4-debian-12-r4
         - name: cassandra-exporter
           image: docker.io/bitnami/cassandra-exporter:2.3.8-debian-12-r17
@@ -15552,6 +15594,27 @@ entries:
     - assets/cloudcasa/cloudcasa-0.1.000.tgz
     version: 0.1.000
   cockroachdb:
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: CockroachDB
+      catalog.cattle.io/kube-version: '>=1.8-0'
+      catalog.cattle.io/release-name: cockroachdb
+    apiVersion: v1
+    appVersion: 23.2.3
+    created: "2024-03-27T00:59:31.479870461Z"
+    description: CockroachDB is a scalable, survivable, strongly-consistent SQL database.
+    digest: f83d837e52cdb93534626d5107bef1a5123fe790be2bd6f2f7ac2996eb50131a
+    home: https://www.cockroachlabs.com
+    icon: https://raw.githubusercontent.com/cockroachdb/cockroach/master/docs/media/cockroach_db.png
+    maintainers:
+    - email: helm-charts@cockroachlabs.com
+      name: cockroachlabs
+    name: cockroachdb
+    sources:
+    - https://github.com/cockroachdb/cockroach
+    urls:
+    - assets/cockroach-labs/cockroachdb-12.0.3.tgz
+    version: 12.0.3
   - annotations:
       catalog.cattle.io/certified: partner
       catalog.cattle.io/display-name: CockroachDB
@@ -24762,6 +24825,33 @@ entries:
     - assets/dh2i/dxoperator-1.0.1.tgz
     version: 1.0.1
   dynatrace-operator:
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: Dynatrace Operator
+      catalog.cattle.io/kube-version: '>=1.19.0-0'
+      catalog.cattle.io/release-name: dynatrace-operator
+    apiVersion: v2
+    appVersion: 1.0.0
+    created: "2024-03-27T00:59:32.361251849Z"
+    description: The Dynatrace Operator Helm chart for Kubernetes and OpenShift
+    digest: 086cd8d1541621edb298058349a1342c35e54edda5c6fc4571cadfff708ec7d6
+    home: https://www.dynatrace.com/
+    icon: https://assets.dynatrace.com/global/resources/Signet_Logo_RGB_CP_512x512px.png
+    kubeVersion: '>=1.19.0-0'
+    maintainers:
+    - email: marcell.sevcsik@dynatrace.com
+      name: 0sewa0
+    - email: christoph.muellner@dynatrace.com
+      name: chrismuellner
+    - email: lukas.hinterreiter@dynatrace.com
+      name: luhi-DT
+    name: dynatrace-operator
+    sources:
+    - https://github.com/Dynatrace/dynatrace-operator
+    type: application
+    urls:
+    - assets/dynatrace/dynatrace-operator-1.0.0.tgz
+    version: 1.0.0
   - annotations:
       catalog.cattle.io/certified: partner
       catalog.cattle.io/display-name: Dynatrace Operator
@@ -36252,6 +36342,34 @@ entries:
       catalog.cattle.io/kube-version: '>= 1.17.0-0'
       catalog.cattle.io/release-name: k10
     apiVersion: v2
+    appVersion: 6.5.10
+    created: "2024-03-27T00:59:34.343952123Z"
+    dependencies:
+    - condition: grafana.enabled
+      name: grafana
+      repository: file://./charts/grafana
+      version: 7.3.2
+    - condition: prometheus.server.enabled
+      name: prometheus
+      repository: file://./charts/prometheus
+      version: 25.12.0
+    description: Kasten’s K10 Data Management Platform
+    digest: 3b8907ed9f943c4631202f3291b01a14e6ea527289a4b15e3881c2b9e9e8d14c
+    home: https://kasten.io/
+    icon: https://docs.kasten.io/_static/logo-kasten-k10-blue-white.png
+    maintainers:
+    - email: contact@kasten.io
+      name: kastenIO
+    name: k10
+    urls:
+    - assets/kasten/k10-6.5.1001.tgz
+    version: 6.5.1001
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: K10
+      catalog.cattle.io/kube-version: '>= 1.17.0-0'
+      catalog.cattle.io/release-name: k10
+    apiVersion: v2
     appVersion: 6.5.9
     created: "2024-03-25T14:58:49.950758504-06:00"
     dependencies:
@@ -37411,6 +37529,58 @@ entries:
     - assets/kasten/k10-4.5.900.tgz
     version: 4.5.900
   kafka:
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: Apache Kafka
+      catalog.cattle.io/kube-version: '>=1.19-0'
+      catalog.cattle.io/release-name: kafka
+      category: Infrastructure
+      images: |
+        - name: jmx-exporter
+          image: docker.io/bitnami/jmx-exporter:0.20.0-debian-12-r11
+        - name: kafka
+          image: docker.io/bitnami/kafka:3.7.0-debian-12-r0
+        - name: kafka-exporter
+          image: docker.io/bitnami/kafka-exporter:1.7.0-debian-12-r19
+        - name: kubectl
+          image: docker.io/bitnami/kubectl:1.29.2-debian-12-r2
+        - name: os-shell
+          image: docker.io/bitnami/os-shell:12-debian-12-r16
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 3.7.0
+    created: "2024-03-27T00:59:29.358287428Z"
+    dependencies:
+    - condition: zookeeper.enabled
+      name: zookeeper
+      repository: file://./charts/zookeeper
+      version: 13.x.x
+    - name: common
+      repository: file://./charts/common
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: Apache Kafka is a distributed streaming platform designed to build
+      real-time pipelines and can be used as a message broker or as a replacement
+      for a log aggregation solution for big data applications.
+    digest: acb1a225cbaca1e2ba929b72a07b5601a528bc6ab8506581867edbc3ad972512
+    home: https://bitnami.com
+    icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/kafka.svg
+    keywords:
+    - kafka
+    - zookeeper
+    - streaming
+    - producer
+    - consumer
+    maintainers:
+    - name: VMware, Inc.
+      url: https://github.com/bitnami/charts
+    name: kafka
+    sources:
+    - https://github.com/bitnami/charts/tree/main/bitnami/kafka
+    urls:
+    - assets/bitnami/kafka-28.0.0.tgz
+    version: 28.0.0
   - annotations:
       catalog.cattle.io/certified: partner
       catalog.cattle.io/display-name: Apache Kafka
@@ -47288,6 +47458,37 @@ entries:
       catalog.cattle.io/namespace: metallb-system
       catalog.cattle.io/release-name: metallb
     apiVersion: v2
+    appVersion: v0.14.4
+    created: "2024-03-27T00:59:35.184240443Z"
+    dependencies:
+    - condition: crds.enabled
+      name: crds
+      repository: file://./charts/crds
+      version: 0.14.4
+    - condition: frrk8s.enabled
+      name: frr-k8s
+      repository: file://./charts/frr-k8s
+      version: 0.0.10
+    description: A network load-balancer implementation for Kubernetes using standard
+      routing protocols
+    digest: 8b26379bee0bb87caa49f4c273a03bc197899cac53194785f21185b0c16ef26f
+    home: https://metallb.universe.tf
+    icon: https://metallb.universe.tf/images/logo/metallb-blue.png
+    kubeVersion: '>= 1.19.0-0'
+    name: metallb
+    sources:
+    - https://github.com/metallb/metallb
+    type: application
+    urls:
+    - assets/metallb/metallb-0.14.4.tgz
+    version: 0.14.4
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: MetalLB
+      catalog.cattle.io/kube-version: '>= 1.19.0-0'
+      catalog.cattle.io/namespace: metallb-system
+      catalog.cattle.io/release-name: metallb
+    apiVersion: v2
     appVersion: v0.14.3
     created: "2024-02-09T14:31:36.279713775Z"
     dependencies:
@@ -50558,6 +50759,32 @@ entries:
   - annotations:
       catalog.cattle.io/certified: partner
       catalog.cattle.io/display-name: NGINX Ingress Controller
+      catalog.cattle.io/kube-version: '>= 1.23.0-0'
+      catalog.cattle.io/release-name: nginx-ingress
+    apiVersion: v2
+    appVersion: 3.5.0
+    created: "2024-03-27T00:59:32.487175227Z"
+    description: NGINX Ingress Controller
+    digest: dbab5dc352fe44de70acf40fc50f5dd3e5683d5b64fe3a836fdf2c4ab80a8d17
+    home: https://github.com/nginxinc/kubernetes-ingress
+    icon: https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/v3.4.3/charts/nginx-ingress/chart-icon.png
+    keywords:
+    - ingress
+    - nginx
+    kubeVersion: '>= 1.23.0-0'
+    maintainers:
+    - email: kubernetes@nginx.com
+      name: nginxinc
+    name: nginx-ingress
+    sources:
+    - https://github.com/nginxinc/kubernetes-ingress/tree/v3.4.3/charts/nginx-ingress
+    type: application
+    urls:
+    - assets/f5/nginx-ingress-1.2.0.tgz
+    version: 1.2.0
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: NGINX Ingress Controller
       catalog.cattle.io/kube-version: '>= 1.22.0-0'
       catalog.cattle.io/release-name: nginx-ingress
     apiVersion: v2
@@ -51214,6 +51441,90 @@ entries:
     - assets/f5/nginx-service-mesh-0.2.100.tgz
     version: 0.2.100
   nri-bundle:
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: New Relic
+      catalog.cattle.io/release-name: nri-bundle
+    apiVersion: v2
+    created: "2024-03-27T00:59:35.792892571Z"
+    dependencies:
+    - condition: infrastructure.enabled,newrelic-infrastructure.enabled
+      name: newrelic-infrastructure
+      repository: file://./charts/newrelic-infrastructure
+      version: 3.33.0
+    - condition: prometheus.enabled,nri-prometheus.enabled
+      name: nri-prometheus
+      repository: file://./charts/nri-prometheus
+      version: 2.1.17
+    - condition: newrelic-prometheus-agent.enabled
+      name: newrelic-prometheus-agent
+      repository: file://./charts/newrelic-prometheus-agent
+      version: 1.12.0
+    - condition: webhook.enabled,nri-metadata-injection.enabled
+      name: nri-metadata-injection
+      repository: file://./charts/nri-metadata-injection
+      version: 4.18.3
+    - condition: metrics-adapter.enabled,newrelic-k8s-metrics-adapter.enabled
+      name: newrelic-k8s-metrics-adapter
+      repository: file://./charts/newrelic-k8s-metrics-adapter
+      version: 1.10.2
+    - condition: ksm.enabled,kube-state-metrics.enabled
+      name: kube-state-metrics
+      repository: file://./charts/kube-state-metrics
+      version: 5.12.1
+    - condition: kubeEvents.enabled,nri-kube-events.enabled
+      name: nri-kube-events
+      repository: file://./charts/nri-kube-events
+      version: 3.9.3
+    - condition: logging.enabled,newrelic-logging.enabled
+      name: newrelic-logging
+      repository: file://./charts/newrelic-logging
+      version: 1.21.2
+    - condition: newrelic-pixie.enabled
+      name: newrelic-pixie
+      repository: file://./charts/newrelic-pixie
+      version: 2.1.3
+    - alias: pixie-chart
+      condition: pixie-chart.enabled
+      name: pixie-operator-chart
+      repository: file://./charts/pixie-operator-chart
+      version: 0.1.4
+    - condition: newrelic-infra-operator.enabled
+      name: newrelic-infra-operator
+      repository: file://./charts/newrelic-infra-operator
+      version: 2.10.0
+    description: Groups together the individual charts for the New Relic Kubernetes
+      solution for a more comfortable deployment.
+    digest: 3889786c5d216e3084407d51db384fdf3aa4d1cd79e855bd53e9027daf4073a6
+    home: https://github.com/newrelic/helm-charts
+    icon: https://newrelic.com/themes/custom/erno/assets/mediakit/new_relic_logo_vertical.svg
+    keywords:
+    - infrastructure
+    - newrelic
+    - monitoring
+    maintainers:
+    - name: juanjjaramillo
+      url: https://github.com/juanjjaramillo
+    - name: csongnr
+      url: https://github.com/csongnr
+    - name: dbudziwojskiNR
+      url: https://github.com/dbudziwojskiNR
+    name: nri-bundle
+    sources:
+    - https://github.com/newrelic/nri-bundle/
+    - https://github.com/newrelic/nri-bundle/tree/master/charts/nri-bundle
+    - https://github.com/newrelic/nri-kubernetes/tree/master/charts/newrelic-infrastructure
+    - https://github.com/newrelic/nri-prometheus/tree/master/charts/nri-prometheus
+    - https://github.com/newrelic/newrelic-prometheus-configurator/tree/master/charts/newrelic-prometheus-agent
+    - https://github.com/newrelic/k8s-metadata-injection/tree/master/charts/nri-metadata-injection
+    - https://github.com/newrelic/newrelic-k8s-metrics-adapter/tree/master/charts/newrelic-k8s-metrics-adapter
+    - https://github.com/newrelic/nri-kube-events/tree/master/charts/nri-kube-events
+    - https://github.com/newrelic/helm-charts/tree/master/charts/newrelic-logging
+    - https://github.com/newrelic/helm-charts/tree/master/charts/newrelic-pixie
+    - https://github.com/newrelic/newrelic-infra-operator/tree/master/charts/newrelic-infra-operator
+    urls:
+    - assets/new-relic/nri-bundle-5.0.71.tgz
+    version: 5.0.71
   - annotations:
       catalog.cattle.io/certified: partner
       catalog.cattle.io/display-name: New Relic
@@ -69341,6 +69652,37 @@ entries:
       catalog.cattle.io/kube-version: '>= 1.17.0-0'
       catalog.cattle.io/release-name: speedscale-operator
     apiVersion: v1
+    appVersion: 2.1.150
+    created: "2024-03-27T00:59:36.643173561Z"
+    description: Stress test your APIs with real world scenarios.  Collect and replay
+      traffic without scripting.
+    digest: fe20c8e48f42b5eec62208acf00bb9b9d17b7b5f11b13f8e85b50e1b70d79be4
+    home: https://speedscale.com
+    icon: https://raw.githubusercontent.com/speedscale/assets/main/logo/gold_logo_only.png
+    keywords:
+    - speedscale
+    - test
+    - testing
+    - regression
+    - reliability
+    - load
+    - replay
+    - network
+    - traffic
+    kubeVersion: '>= 1.17.0-0'
+    maintainers:
+    - email: support@speedscale.com
+      name: Speedscale Support
+    name: speedscale-operator
+    urls:
+    - assets/speedscale/speedscale-operator-2.1.13.tgz
+    version: 2.1.13
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: Speedscale Operator
+      catalog.cattle.io/kube-version: '>= 1.17.0-0'
+      catalog.cattle.io/release-name: speedscale-operator
+    apiVersion: v1
     appVersion: 2.1.136
     created: "2024-03-25T14:59:08.796377739-06:00"
     description: Stress test your APIs with real world scenarios.  Collect and replay
@@ -71727,6 +72069,34 @@ entries:
       catalog.cattle.io/release-name: stackstate-k8s-agent
     apiVersion: v2
     appVersion: 3.0.0
+    created: "2024-03-27T00:59:36.671157342Z"
+    dependencies:
+    - alias: httpHeaderInjectorWebhook
+      name: http-header-injector
+      repository: file://./charts/http-header-injector
+      version: 0.0.8
+    description: Helm chart for the StackState Agent.
+    digest: c397fcff14d9c0b23bbf55ed249ed98e1d611a22b49576eb17068c6819eb4822
+    home: https://github.com/StackVista/stackstate-agent
+    icon: https://raw.githubusercontent.com/StackVista/helm-charts/master/stable/stackstate-k8s-agent/logo.svg
+    keywords:
+    - monitoring
+    - observability
+    - stackstate
+    maintainers:
+    - email: ops@stackstate.com
+      name: Stackstate
+    name: stackstate-k8s-agent
+    urls:
+    - assets/stackstate/stackstate-k8s-agent-1.0.77.tgz
+    version: 1.0.77
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: StackState Agent
+      catalog.cattle.io/kube-version: '>=1.19.0-0'
+      catalog.cattle.io/release-name: stackstate-k8s-agent
+    apiVersion: v2
+    appVersion: 3.0.0
     created: "2024-03-15T00:32:48.388040861Z"
     dependencies:
     - alias: httpHeaderInjectorWebhook
@@ -73925,6 +74295,51 @@ entries:
     - assets/intel/tcs-issuer-0.1.0.tgz
     version: 0.1.0
   tomcat:
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/display-name: Apache Tomcat
+      catalog.cattle.io/kube-version: '>=1.19-0'
+      catalog.cattle.io/release-name: tomcat
+      category: ApplicationServer
+      images: |
+        - name: jmx-exporter
+          image: docker.io/bitnami/jmx-exporter:0.20.0-debian-12-r12
+        - name: os-shell
+          image: docker.io/bitnami/os-shell:12-debian-12-r17
+        - name: tomcat
+          image: docker.io/bitnami/tomcat:10.1.20-debian-12-r0
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 10.1.20
+    created: "2024-03-27T00:59:30.344524924Z"
+    dependencies:
+    - name: common
+      repository: file://./charts/common
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: Apache Tomcat is an open-source web server designed to host and run
+      Java-based web applications. It is a lightweight server with a good performance
+      for applications running in production environments.
+    digest: 17cebbee61ed674e2a0d1b27373002a98b6eff1fb4d9b20c2357da75bc90c55b
+    home: https://bitnami.com
+    icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/tomcat.svg
+    keywords:
+    - tomcat
+    - java
+    - http
+    - web
+    - application server
+    - jsp
+    maintainers:
+    - name: VMware, Inc.
+      url: https://github.com/bitnami/charts
+    name: tomcat
+    sources:
+    - https://github.com/bitnami/charts/tree/main/bitnami/tomcat
+    urls:
+    - assets/bitnami/tomcat-10.17.2.tgz
+    version: 10.17.2
   - annotations:
       catalog.cattle.io/certified: partner
       catalog.cattle.io/display-name: Apache Tomcat
