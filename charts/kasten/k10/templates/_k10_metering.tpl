@@ -122,6 +122,7 @@ spec:
         checksum/secret: {{ include (print .Template.BasePath "/secrets.yaml") . | sha256sum }}
       labels:
 {{ include "helm.labels" . | indent 8 }}
+{{- include "k10.azMarketPlace.billingIdentifier" . }}
         component: {{ $service }}
         run: {{ $service }}-svc
     spec:
@@ -181,6 +182,9 @@ spec:
               configMapKeyRef:
                 name: k10-config
                 key: clustername
+{{- end }}
+{{- if .Values.fips.enabled }}
+          {{- include "k10.enforceFIPSEnvironmentVariables" . | indent 10 }}
 {{- end }}
           {{- with $capabilities := include "k10.capabilities" . }}
           - name: K10_CAPABILITIES

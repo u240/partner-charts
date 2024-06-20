@@ -141,6 +141,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{.Values.controllerReplicas}}
+  revisionHistoryLimit: {{.Values.revisionHistoryLimit}}
   selector:
     matchLabels:
       linkerd.io/control-plane-component: destination
@@ -176,6 +177,8 @@ spec:
       {{- include "linkerd.affinity" $tree | nindent 6 }}
       containers:
       {{- if not (empty .Values.destinationProxyResources) }}
+      {{- $c := dig "cores" .Values.proxy.cores .Values.destinationProxyResources }}
+      {{- $_ := set $tree.Values.proxy "cores" $c }}
       {{- $r := merge .Values.destinationProxyResources .Values.proxy.resources }}
       {{- $_ := set $tree.Values.proxy "resources" $r }}
       {{- end }}
@@ -204,7 +207,11 @@ spec:
         - -cluster-domain={{.Values.clusterDomain}}
         - -identity-trust-domain={{.Values.identityTrustDomain | default .Values.clusterDomain}}
         - -default-opaque-ports={{.Values.proxy.opaquePorts}}
+        - -enable-ipv6={{not .Values.disableIPv6}}
         - -enable-pprof={{.Values.enablePprof | default false}}
+        {{- if (.Values.destinationController).meshedHttp2ClientProtobuf }}
+        - --meshed-http2-client-params={{ toJson .Values.destinationController.meshedHttp2ClientProtobuf }}
+        {{- end }}
         {{- range (.Values.destinationController).additionalArgs }}
         - {{ . }}
         {{- end }}
@@ -249,6 +256,9 @@ spec:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
           runAsUser: {{.Values.controllerUID}}
+          {{- if ge (int .Values.controllerGID) 0 }}
+          runAsGroup: {{.Values.controllerGID}}
+          {{- end }}
           allowPrivilegeEscalation: false
           seccompProfile:
             type: RuntimeDefault
@@ -294,6 +304,9 @@ spec:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
           runAsUser: {{.Values.controllerUID}}
+          {{- if ge (int .Values.controllerGID) 0 }}
+          runAsGroup: {{.Values.controllerGID}}
+          {{- end }}
           allowPrivilegeEscalation: false
           seccompProfile:
             type: RuntimeDefault
@@ -354,6 +367,9 @@ spec:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
           runAsUser: {{.Values.controllerUID}}
+          {{- if ge (int .Values.controllerGID) 0 }}
+          runAsGroup: {{.Values.controllerGID}}
+          {{- end }}
           allowPrivilegeEscalation: false
           seccompProfile:
             type: RuntimeDefault

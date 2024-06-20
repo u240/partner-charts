@@ -38,7 +38,9 @@ spec:
       labels:
         {{- include "cost-analyzer.selectorLabels" . | nindent 8 }}
         {{/* Force pod restarts on upgrades to ensure the nginx config is current */}}
+        {{- if not .Values.global.platforms.cicd.enabled }}
         helm-rollout-restarter: {{ randAlphaNum 5 | quote }}
+        {{- end }}
         {{- if .Values.global.additionalLabels }}
         {{ toYaml .Values.global.additionalLabels | nindent 8 }}
         {{- end }}
@@ -586,7 +588,8 @@ spec:
             - name: azure-storage-config
               mountPath: /var/azure-storage-config
             {{- end }}
-            {{- if or (.Values.kubecostProductConfigs.cloudIntegrationSecret) (.Values.kubecostProductConfigs.cloudIntegrationJSON) }}
+            # TODO remove this if-clause when CloudCost has been removed from Opencost Cost-Model
+            {{- if or (.Values.kubecostProductConfigs).cloudIntegrationSecret (.Values.kubecostProductConfigs).cloudIntegrationJSON ((.Values.kubecostProductConfigs).athenaBucketName) }}
             - name: cloud-integration
               mountPath: /var/configs/cloud-integration
             {{- end }}

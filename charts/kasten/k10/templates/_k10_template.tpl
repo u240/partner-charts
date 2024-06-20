@@ -56,6 +56,7 @@ spec:
 {{- end}}
       labels:
 {{ include "helm.labels" . | indent 8 }}
+{{- include "k10.azMarketPlace.billingIdentifier" . }}
         component: {{ $service }}
         run: {{ $deploymentName }}
     spec:
@@ -131,6 +132,7 @@ spec:
         configMap:
           name: k10-features
 {{- end }}
+{{- if list "dashboardbff" "auth" "controllermanager" | has $pod}}
 {{- if eq (include "basicauth.check" .) "true" }}
       - name: k10-basic-auth
         secret:
@@ -159,15 +161,17 @@ spec:
         configMap:
           name: k10-logos-dex
 {{- end }}
+{{- end }}
 {{- range $skip, $statefulContainer := compact (dict "main" . "k10_service_pod" $pod | include "get.statefulRestServicesInPod" | splitList " ") }}
       - name: {{ $statefulContainer }}-persistent-storage
         persistentVolumeClaim:
           claimName: {{ $statefulContainer }}-pv-claim
 {{- end }}
-{{- if eq (include "check.googlecreds" .) "true" }}
+{{- if eq (include "check.googleCredsOrSecret" .) "true"  }}
+{{- $gkeSecret := default "google-secret" .Values.secrets.googleClientSecretName }}
       - name: service-account
         secret:
-          secretName: google-secret
+          secretName: {{ $gkeSecret }}
 {{- end }}
 {{- if and (list "controllermanager" "executor" "catalog" | has $pod) (eq (include "check.projectSAToken" .) "true")}}
       - name: bound-sa-token

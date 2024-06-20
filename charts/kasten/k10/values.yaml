@@ -13,6 +13,7 @@ serviceAccount:
 
 scc:
   create: false
+  priority: 15
 
 networkPolicy:
   create: true
@@ -135,12 +136,26 @@ kanisterToolsImage:
 
 ingress:
   create: false
+  name: ""
   tls:
     enabled: false
+    secretName: "" #TLS secret name
   class: "" #Ingress controller type
   host: "" #ingress object host name
   urlPath: "" #url path for k10 gateway
   pathType: "ImplementationSpecific"
+  defaultBackend:
+    service:
+      enabled: false
+      name: ""
+      port:
+        name: ""
+        number: 0
+    resource:
+      enabled: false
+      apiGroup: ""
+      kind: ""
+      name: ""
 
 eula:
   accept: false #true value if EULA accepted
@@ -148,7 +163,7 @@ eula:
 license: "" #base64 encoded string provided by Kasten
 
 cluster:
-  domainName: "cluster.local" #default value is cluster.local
+  domainName: ""
 
 multicluster:
   enabled: true
@@ -189,13 +204,16 @@ secrets:
   awsAccessKeyId: ''
   awsSecretAccessKey: ''
   awsIamRole: ''
+  awsClientSecretName: ''
   googleApiKey: ''
   googleProjectId: ''
+  googleClientSecretName: ''
   dockerConfig: ''
   dockerConfigPath: ''
   azureTenantId: ''
   azureClientId: ''
   azureClientSecret: ''
+  azureClientSecretName: ''
   azureResourceGroup: ''
   azureSubscriptionID: ''
   azureResourceMgrEndpoint: ''
@@ -208,6 +226,7 @@ secrets:
   vsphereEndpoint: ''
   vsphereUsername: ''
   vspherePassword: ''
+  vsphereClientSecretName: ''
 
 metering:
   reportingKey: "" #[base64-encoded key]
@@ -418,6 +437,7 @@ limiter:
   genericVolumeRestores: 10
   csiSnapshots: 10
   providerSnapshots: 10
+  imageCopies: 10
 
 gateway:
   insecureDisableSSLVerify: false
@@ -488,3 +508,15 @@ reporting:
 maxJobWaitDuration: ""
 
 forceRootInKanisterHooks: true
+
+ephemeralPVCOverhead: 0.1
+
+datastore:
+  parallelUploads: 8
+
+kastenDisasterRecovery:
+  quickMode:
+    enabled: false
+
+fips:
+  enabled: false

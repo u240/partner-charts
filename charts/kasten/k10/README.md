@@ -57,8 +57,9 @@ Parameter | Description | Default
 `eula.company` | Company name. Required field if EULA is accepted | `None`
 `eula.email` | Contact email. Required field if EULA is accepted | `None`
 `license` | License string obtained from Kasten | `None`
-`rbac.create` | Whether to enable RBAC with a specific cluster role and binding for K10  | `true`
-`scc.create` | Whether to create a SecurityContextConstraints for K10 ServiceAccounts  | `false`
+`rbac.create` | Whether to enable RBAC with a specific cluster role and binding for K10 | `true`
+`scc.create` | Whether to create a SecurityContextConstraints for K10 ServiceAccounts | `false`
+`scc.priority` | Sets the SecurityContextConstraints priority | `15`
 `services.dashboardbff.hostNetwork` | Whether the dashboardbff pods may use the node network | `false`
 `services.executor.hostNetwork` | Whether the executor pods may use the node network | `false`
 `services.executor.workerCount` | Specifies count of running executor workers | 8
@@ -69,14 +70,23 @@ Parameter | Description | Default
 `serviceAccount.create`| Specifies whether a ServiceAccount should be created | `true`
 `serviceAccount.name` | The name of the ServiceAccount to use. If not set, a name is derived using the release and chart names. | `None`
 `ingress.create` | Specifies whether the K10 dashboard should be exposed via ingress | `false`
+`ingress.name` | Optional name of the Ingress object for the K10 dashboard. If not set, the name is formed using the release name. | `{Release.Name}-ingress`
 `ingress.class` | Cluster ingress controller class: `nginx`, `GCE` | `None`
 `ingress.host` | FQDN (e.g., `k10.example.com`) for name-based virtual host | `None`
 `ingress.urlPath` | URL path for K10 Dashboard (e.g., `/k10`) | `Release.Name`
+`ingress.pathType` | Specifies the path type for the ingress resource | `ImplementationSpecific`
 `ingress.annotations` | Additional Ingress object annotations | `{}`
 `ingress.tls.enabled` | Configures a TLS use for `ingress.host` | `false`
 `ingress.tls.secretName` | Specifies a name of TLS secret | `None`
-`ingress.pathType` | Specifies the path type for the ingress resource | `ImplementationSpecific`
-`global.persistence.size` | Default global size of volumes for K10 persistent services  | `20Gi`
+`ingress.defaultBackend.service.enabled` | Configures the default backend backed by a service for the K10 dashboard Ingress (mutually exclusive setting with `ingress.defaultBackend.resource.enabled`). | `false`
+`ingress.defaultBackend.service.name` | The name of a service referenced by the default backend (required if the service-backed default backend is used). | `None`
+`ingress.defaultBackend.service.port.name` | The port name of a service referenced by the default backend (mutually exclusive setting with port `number`, required if the service-backed default backend is used). | `None`
+`ingress.defaultBackend.service.port.number` | The port number of a service referenced by the default backend (mutually exclusive setting with port `name`, required if the service-backed default backend is used). | `None`
+`ingress.defaultBackend.resource.enabled` | Configures the default backend backed by a resource for the K10 dashboard Ingress (mutually exclusive setting with `ingress.defaultBackend.service.enabled`). | `false`
+`ingress.defaultBackend.resource.apiGroup` | Optional API group of a resource backing the default backend. | `''`
+`ingress.defaultBackend.resource.kind` | The type of a resource being referenced by the default backend (required if the resource default backend is used). | `None`
+`ingress.defaultBackend.resource.name` | The name of a resource being referenced by the default backend (required if the resource default backend is used). | `None`
+`global.persistence.size` | Default global size of volumes for K10 persistent services | `20Gi`
 `global.persistence.catalog.size` | Size of a volume for catalog service  | `global.persistence.size`
 `global.persistence.jobs.size` | Size of a volume for jobs service  | `global.persistence.size`
 `global.persistence.logging.size` | Size of a volume for logging service  | `global.persistence.size`
@@ -94,11 +104,13 @@ Parameter | Description | Default
 `secrets.awsAccessKeyId` | AWS access key ID (required for AWS deployment) | `None`
 `secrets.awsSecretAccessKey` | AWS access key secret | `None`
 `secrets.awsIamRole` | ARN of the AWS IAM role assumed by K10 to perform any AWS operation. | `None`
+`secrets.awsClientSecretName` | The secret that contains AWS access key ID, AWS access key secret and AWS IAM role for AWS | `None`
 `secrets.googleApiKey` | Non-default base64 encoded GCP Service Account key | `None`
 `secrets.googleProjectId` | Sets Google Project ID other than the one used in the GCP Service Account | `None`
 `secrets.azureTenantId` | Azure tenant ID (required for Azure deployment) | `None`
 `secrets.azureClientId` | Azure Service App ID | `None`
 `secrets.azureClientSecret` | Azure Service APP secret | `None`
+`secrets.azureClientSecretName` | The secret that contains ClientID, ClientSecret and TenantID for Azure | `None`
 `secrets.azureResourceGroup` | Resource Group name that was created for the Kubernetes cluster | `None`
 `secrets.azureSubscriptionID` | Subscription ID in your Azure tenant | `None`
 `secrets.azureResourceMgrEndpoint` | Resource management endpoint for the Azure Stack instance | `None`
@@ -108,6 +120,7 @@ Parameter | Description | Default
 `secrets.vsphereEndpoint` | vSphere endpoint for login | `None`
 `secrets.vsphereUsername` | vSphere username for login | `None`
 `secrets.vspherePassword` | vSphere password for login | `None`
+`secrets.vsphereClientSecretName` | The secret that contains vSphere username, vSphere password and vSphere endpoint | `None`
 `secrets.dockerConfig` | Set base64 encoded docker config to use for image pull operations. Alternative to the ``secrets.dockerConfigPath`` | `None`
 `secrets.dockerConfigPath` | Use ``--set-file secrets.dockerConfigPath=path_to_docker_config.yaml`` to specify docker config for image pull. Will be overwritten if ``secrets.dockerConfig`` is set | `None`
 `cacertconfigmap.name` | Name of the ConfigMap that contains a certificate for a trusted root certificate authority | `None`
@@ -160,7 +173,7 @@ Parameter | Description | Default
 `auth.ldap.host` | Host and optional port of the AD/LDAP server in the form `host:port` | `None`
 `auth.ldap.insecureNoSSL` | Required if the AD/LDAP host is not using TLS | `false`
 `auth.ldap.insecureSkipVerifySSL` | To turn off SSL verification of connections to the AD/LDAP host | `false`
-`auth.ldap.startTLS` | When set to true, ldap:// is used to connect to the server followed by creation of a TLS session. When set to false, ldaps:// is used.  | `false`
+`auth.ldap.startTLS` | When set to true, ldap:// is used to connect to the server followed by creation of a TLS session. When set to false, ldaps:// is used. | `false`
 `auth.ldap.bindDN` | The Distinguished Name(username) used for connecting to the AD/LDAP host | `None`
 `auth.ldap.bindPW` | The password corresponding to the `bindDN` for connecting to the AD/LDAP host | `None`
 `auth.ldap.bindPWSecretName` | The name of the secret that contains the password corresponding to the `bindDN` for connecting to the AD/LDAP host | `None`
@@ -194,6 +207,10 @@ Parameter | Description | Default
 `gateway.resources.[requests\|limits].[cpu\|memory]` | Resource requests and limits for gateway pod | `{}`
 `gateway.service.externalPort` | Specifies the gateway services external port | `80`
 `genericVolumeSnapshot.resources.[requests\|limits].[cpu\|memory]` | Resource requests and limits for Generic Volume Snapshot restore pods | `{}`
+`multicluster.enabled` | Choose whether to enable the multi-cluster system components and capabilities | `true`
+`multicluster.primary.create` | Choose whether to setup cluster as a multi-cluster primary | `false`
+`multicluster.primary.name` | Primary cluster name | `''`
+`multicluster.primary.ingressURL` | Primary cluster dashboard URL | `''`
 `prometheus.k10image.registry` | (optional) Set Prometheus image registry. | `gcr.io`
 `prometheus.k10image.repository` | (optional) Set Prometheus image repository. | `kasten-images`
 `prometheus.rbac.create` | (optional) Whether to create Prometheus RBAC configuration. Warning - this action will allow prometheus to scrape pods in all k8s namespaces | `false`
@@ -239,7 +256,8 @@ Parameter | Description | Default
 `limiter.genericVolumeRestores` | Limit of concurrent generic volume snapshot restore operations | `10`
 `limiter.csiSnapshots` | Limit of concurrent CSI snapshot create operations | `10`
 `limiter.providerSnapshots` | Limit of concurrent cloud provider create operations | `10`
-`cluster.domainName` | Specifies the domain name of the cluster | `cluster.local`
+`limiter.imageCopies` | Limit of concurrent image copy operations | `10`
+`cluster.domainName` | Specifies the domain name of the cluster | `""`
 `kanister.backupTimeout` | Specifies timeout to set on Kanister backup operations | `45`
 `kanister.restoreTimeout` | Specifies timeout to set on Kanister restore operations | `600`
 `kanister.deleteTimeout` | Specifies timeout to set on Kanister delete operations | `45`
@@ -265,7 +283,10 @@ Parameter | Description | Default
 `forceRootInKanisterHooks` | Forces Kanister Execution Hooks to run with root privileges | `true`
 `defaultPriorityClassName` | Specifies the default [priority class](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass) name for all K10 deployments and ephemeral pods | `None`
 `priorityClassName.<deploymentName>` | Overrides the default [priority class](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass) name for the specified deployment | `{}`
-
+`ephemeralPVCOverhead` | Set the percentage increase for the ephemeral Persistent Volume Claim's storage request, e.g. PVC size = (file raw size) * (1 + `ephemeralPVCOverhead`) | `0.1`
+`datastore.parallelUploads` | Specifies how many files can be uploaded in parallel to the data store | `8`
+`kastenDisasterRecovery.quickMode.enabled` | Enables K10 Quick Disaster Recovery | `false`
+`fips.enabled` | Specifies whether K10 should be run in the FIPS mode of operation | `false`
 ## Helm tips and tricks
 
 There is a way of setting values via a yaml file instead of using `--set`.

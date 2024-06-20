@@ -20,8 +20,7 @@ limitations under the License.
   StatefulSets cannot change their selector. Use the existing one even if it's broken.
   New installs will get better selectors.
 */ -}}
-{{- $sts := lookup "apps/v1" "StatefulSet" .Release.Namespace (include "redpanda.fullname" .) -}}
-{{- get ((include "redpanda.StatefulSetPodLabelsSelector" (dict "a" (list . $sts))) | fromJson) "r" | toYaml }}
+{{- get (include "redpanda.StatefulSetPodLabelsSelector" (dict "a" (list .)) | fromJson) "r" | toYaml }}
 {{- end -}}
 
 {{- define "statefulset-pod-labels" -}}
@@ -29,8 +28,7 @@ limitations under the License.
   StatefulSets cannot change their selector. Use the existing one even if it's broken.
   New installs will get better selectors.
 */ -}}
-{{- $sts := lookup "apps/v1" "StatefulSet" .Release.Namespace (include "redpanda.fullname" .) -}}
-{{- get ((include "redpanda.StatefulSetPodLabels" (dict "a" (list . $sts))) | fromJson) "r" | toYaml }}
+{{- get (include "redpanda.StatefulSetPodLabels" (dict "a" (list .)) | fromJson) "r" | toYaml }}
 {{- end -}}
 
 {{/*
@@ -93,7 +91,7 @@ podAntiAffinity:
     podAffinityTerm:
       topologyKey: {{ .Values.statefulset.podAntiAffinity.topologyKey }}
       labelSelector:
-        matchLabels: {{ include "statefulset-pod-labels-selector" . | nindent 8 }}
+        matchLabels: {{ include "statefulset-pod-labels-selector" . | nindent 10 }}
   {{- else if eq .Values.statefulset.podAntiAffinity.type "custom" -}}
     {{- toYaml .Values.statefulset.podAntiAffinity.custom | nindent 2 }}
   {{- end -}}

@@ -300,8 +300,6 @@ logging:
   usageStats:
     # Enable the `rpk.enable_usage_stats` property.
     enabled: true
-    # Your organization name (optional)
-    # organization: your-org
     # Your cluster ID (optional)
     # clusterId: your-helm-cluster
 
@@ -313,7 +311,7 @@ monitoring:
   labels: {}
   # Enables http2 for scraping metrics for prometheus. Used when Istio's mTLS is enabled and using tlsConfig.
   # enableHttp2: true
-  tlsConfig: {}
+  # tlsConfig:
     # caFile: /etc/prom-certs/root-cert.pem
     # certFile: /etc/prom-certs/cert-chain.pem
     # insecureSkipVerify: true
@@ -344,6 +342,11 @@ resources:
     #
     # This setting is equivalent to `--smp`, `resources.requests.cpu`, and `resources.limits.cpu`.
     # For production, use `4` or greater.
+    #
+    # To maximize efficiency, use the `static` CPU manager policy by specifying an even integer for
+    # CPU resource requests and limits. This policy gives the Pods running Redpanda brokers
+    # access to exclusive CPUs on the node. See
+    # https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/#static-policy.
     cores: 1
     #
     # -- Overprovisioned means Redpanda won't assume it has all of the provisioned CPU.
@@ -358,7 +361,7 @@ resources:
   # For details,
   # see the [Pod resources documentation](https://docs.redpanda.com/docs/manage/kubernetes/manage-resources/#configure-memory-resources).
   memory:
-    # Enables memory locking.
+    # -- Enables memory locking.
     # For production, set to `true`.
     # enable_memory_locking: false
     #
@@ -370,7 +373,12 @@ resources:
     #
     # These values affect `--memory` and `--reserve-memory` flags passed to Redpanda and the memory
     # requests/limits in the StatefulSet.
-    # Valid suffixes: B, K, M, G, Ki, Mi, and Gi
+    # Valid suffixes: k, M, G, T, P, Ki, Mi, Gi, Ti, Pi
+    # To create `Guaranteed` Pod QoS for Redpanda brokers, provide both container max and min values for the container.
+    # For details, see
+    # https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/#create-a-pod-that-gets-assigned-a-qos-class-of-guaranteed
+    # * Every container in the Pod must have a memory limit and a memory request.
+    # * For every container in the Pod, the memory limit must equal the memory request.
     #
     container:
       # Minimum memory count for each Redpanda broker.
@@ -520,6 +528,9 @@ storage:
       # Note that the container must belong to the account specified by `cloud_storage_azure_storage_account`.
       # See the [property reference documentation](https://docs.redpanda.com/docs/reference/cluster-properties/#cloud_storage_azure_container).
       cloud_storage_azure_container: null
+      # The managed identity ID to access the Azure storage account.
+      # See the [property reference documentation](https://docs.redpanda.com/docs/reference/cluster-properties/#cloud_storage_azure_managed_identity_id).
+      cloud_storage_azure_managed_identity_id: null
       # -- Name of the Azure storage account to use with Tiered Storage (required for ABS/ADLS).
       # See the [property reference documentation](https://docs.redpanda.com/docs/reference/cluster-properties/#cloud_storage_azure_storage_account).
       cloud_storage_azure_storage_account: null
@@ -536,6 +547,8 @@ storage:
       # * `aws_instance_metadata`
       # * `sts`
       # * `gcp_instance_metadata`
+      # * `azure_aks_oidc_federation`
+      # * `azure_vm_instance_metadata`
       # See the [property reference documentation](https://docs.redpanda.com/docs/reference/cluster-properties/#cloud_storage_credentials_source).
       cloud_storage_credentials_source: config_file
 
@@ -630,11 +643,21 @@ statefulset:
   # Annotations are used only for `Statefulset.spec.template.metadata.annotations`. The StatefulSet does not have
   #	any dedicated annotation.
   annotations: {}
+  # -- Additional labels to be added to statefulset label selector.
+  # For example, `my.k8s.service: redpanda`.
+  additionalSelectorLabels: {}
   podTemplate:
     # -- Additional labels to apply to the Pods of this StatefulSet.
     labels: {}
     # -- Additional annotations to apply to the Pods of this StatefulSet.
     annotations: {}
+    # -- A subset of Kubernetes' PodSpec type that will be merged into the redpanda StatefulSet via a [strategic merge patch](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/#use-a-strategic-merge-patch-to-update-a-deployment).
+    spec:
+      containers: []
+      # - name: redpanda
+      #   env:
+      #   - name: EXTRA_ENV_VAR
+      #     value: THIS_IS_AN_EXAMPLE
   # -- Adjust the period for your probes to meet your needs.
   # For details,
   # see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes).
@@ -709,6 +732,17 @@ statefulset:
   sideCars:
     configWatcher:
       enabled: true
+      # -- To create `Guaranteed` Pods for Redpanda brokers, provide both requests and limits for CPU and memory. For details, see
+      # https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/#create-a-pod-that-gets-assigned-a-qos-class-of-guaranteed
+      # * Every container in the Pod must have a memory limit and a memory request.
+      # * For every container in the Pod, the memory limit must equal the memory request.
+      # * Every container in the Pod must have a CPU limit and a CPU request.
+      # * For every container in the Pod, the CPU limit must equal the CPU request.
+      #
+      # To maximize efficiency, use the `static` CPU manager policy by specifying an even integer for
+      # CPU resource requests and limits. This policy gives the Pods running Redpanda brokers
+      # access to exclusive CPUs on the node. For details, see
+      # https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/#static-policy
       resources: {}
       securityContext: {}
       extraVolumeMounts: |-
@@ -727,6 +761,18 @@ statefulset:
         repository: docker.redpanda.com/redpandadata/redpanda-operator
       # You must also enable RBAC, `rbac.enabled=true`, to deploy this sidecar
       enabled: false
+      # -- To create `Guaranteed` Pods for Redpanda brokers, provide both requests and limits for CPU and memory. For details, see
+      # https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/#create-a-pod-that-gets-assigned-a-qos-class-of-guaranteed
+      #
+      # * Every container in the Pod must have a CPU limit and a CPU request.
+      # * For every container in the Pod, the CPU limit must equal the CPU request.
+      # * Every container in the Pod must have a CPU limit and a CPU request.
+      # * For every container in the Pod, the CPU limit must equal the CPU request.
+      #
+      # To maximize efficiency, use the `static` CPU manager policy by specifying an even integer for
+      # CPU resource requests and limits. This policy gives the Pods running Redpanda brokers
+      # access to exclusive CPUs on the node. For details, see
+      # https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/#static-policy
       resources: {}
       securityContext: {}
       healthProbeAddress: ":8085"
@@ -738,21 +784,41 @@ statefulset:
     fsValidator:
       enabled: false
       expectedFS: xfs
+      # -- To create `Guaranteed` Pods for Redpanda brokers, provide both requests and limits for CPU and memory. For details, see
+      # https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/#create-a-pod-that-gets-assigned-a-qos-class-of-guaranteed
+      # * Every container in the Pod must have a CPU limit and a CPU request.
+      # * For every container in the Pod, the CPU limit must equal the CPU request.
       resources: {}
       extraVolumeMounts: |-
     tuning:
+      # -- To create `Guaranteed` Pods for Redpanda brokers, provide both requests and limits for CPU and memory. For details, see
+      # https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/#create-a-pod-that-gets-assigned-a-qos-class-of-guaranteed
+      # * Every container in the Pod must have a CPU limit and a CPU request.
+      # * For every container in the Pod, the CPU limit must equal the CPU request.
       resources: {}
       extraVolumeMounts: |-
     setDataDirOwnership:
       # -- In environments where root is not allowed, you cannot change the ownership of files and directories.
       # Enable `setDataDirOwnership` when using default minikube cluster configuration.
       enabled: false
+      # -- To create `Guaranteed` Pods for Redpanda brokers, provide both requests and limits for CPU and memory. For details, see
+      # https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/#create-a-pod-that-gets-assigned-a-qos-class-of-guaranteed
+      # * Every container in the Pod must have a CPU limit and a CPU request.
+      # * For every container in the Pod, the CPU limit must equal the CPU request.
       resources: {}
       extraVolumeMounts: |-
     setTieredStorageCacheDirOwnership:
+      # -- To create `Guaranteed` Pods for Redpanda brokers, provide both requests and limits for CPU and memory. For details, see
+      # https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/#create-a-pod-that-gets-assigned-a-qos-class-of-guaranteed
+      # * Every container in the Pod must have a CPU limit and a CPU request.
+      # * For every container in the Pod, the CPU limit must equal the CPU request.
       resources: {}
       extraVolumeMounts: |-
     configurator:
+      # -- To create `Guaranteed` Pods for Redpanda brokers, provide both requests and limits for CPU and memory. For details, see
+      # https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/#create-a-pod-that-gets-assigned-a-qos-class-of-guaranteed
+      # * Every container in the Pod must have a CPU limit and a CPU request.
+      # * For every container in the Pod, the CPU limit must equal the CPU request.
       resources: {}
       extraVolumeMounts: |-
     ## Additional init containers

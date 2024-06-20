@@ -8,12 +8,9 @@ on:
 jobs:
   update:
     permissions:
-      contents: read
       id-token: write
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-
     - name: Configure git
       run: |
         git config --global user.name "github-actions[bot]"
@@ -33,15 +30,16 @@ jobs:
         app-id: ${{ env.APP_ID }}
         private-key: ${{ env.PRIVATE_KEY }}
 
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ steps.app-token.outputs.token }}
+
     - name: Update main-source branch
-      env:
-        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
       run: |
         scripts/pull-ci-scripts
-        bin/partner-charts-ci auto
+        bin/partner-charts-ci auto --icons
 
         # exit if there are no changes
         git diff --quiet origin/main-source main-source && exit 0
 
         git push origin main-source
-#        git remote set-url origin https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/partner-charts

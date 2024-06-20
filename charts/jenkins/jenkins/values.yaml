@@ -393,10 +393,10 @@ controller:
   # Plugins will be installed during Jenkins controller start
   # -- List of Jenkins plugins to install. If you don't want to install plugins, set it to `false`
   installPlugins:
-    - kubernetes:4203.v1dd44f5b_1cf9
+    - kubernetes:4246.v5a_12b_1fe120e
     - workflow-aggregator:596.v8c21c963d92d
-    - git:5.2.1
-    - configuration-as-code:1775.v810dc950b_514
+    - git:5.2.2
+    - configuration-as-code:1810.v9b_c30a_249a_4c
 
   # If set to false, Jenkins will download the minimum required version of all dependencies.
   # -- Download the minimum required version or latest version of all dependencies
@@ -533,6 +533,10 @@ controller:
     authorizationStrategy: |-
       loggedInUsersCanDoAnything:
         allowAnonymousRead: false
+
+    # -- Annotations for the JCasC ConfigMap
+    configMapAnnotations: {}
+
   # -- Custom init-container specification in raw-yaml format
   customInitContainers: []
   # - name: custom-init
@@ -554,7 +558,7 @@ controller:
         # -- Repository of the image that triggers the reload
         repository: kiwigrid/k8s-sidecar
         # -- Tag for the image that triggers the reload
-        tag: 1.26.1
+        tag: 1.27.4
       imagePullPolicy: IfNotPresent
       resources: {}
         #   limits:
@@ -650,6 +654,9 @@ controller:
   # ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   # -- Update strategy for StatefulSet
   updateStrategy: {}
+
+  # -- Topology spread constraints
+  topologySpreadConstraints: {}
 
   ingress:
     # -- Enables ingress
@@ -908,7 +915,7 @@ agent:
     # -- Repository to pull the agent jnlp image from
     repository: "jenkins/inbound-agent"
     # -- Tag of the image to pull
-    tag: "3206.vb_15dcf73f6a_9-3"
+    tag: "3248.v65ecb_254c298-1"
   # -- Configure working directory for default agent
   workingDir: "/home/jenkins/agent"
   nodeUsageMode: "NORMAL"
@@ -1081,6 +1088,8 @@ agent:
 
   # -- Defines how the raw yaml field gets merged with yaml definitions from inherited pod templates. Possible values: "merge" or "override"
   yamlMergeStrategy: "override"
+  # -- Controls whether the defined yaml merge strategy will be inherited if another defined pod template is configured to inherit from the current one
+  inheritYamlMergeStrategy: false
   # -- Timeout in seconds for an agent to be online
   connectTimeout: 100
   # -- Annotations to apply to the pod
